@@ -14,6 +14,7 @@ namespace Topshelf.Internal
 {
     using System;
     using System.Diagnostics;
+    using System.Runtime.Remoting.Lifetime;
     using Microsoft.Practices.ServiceLocation;
 
     [DebuggerDisplay("Isolated Service({Name}) - {State}")]
@@ -24,6 +25,7 @@ namespace Topshelf.Internal
         private AppDomain _domain;
         private ServiceControllerProxy _remoteServiceController;
         private ControllerDelegates<TService> _delegates = new ControllerDelegates<TService>();
+        private ClientSponsor _clientSponsor = new ClientSponsor();
 
         public void Start()
         {
@@ -46,6 +48,8 @@ namespace Topshelf.Internal
             _remoteServiceController = _domain.CreateInstanceAndUnwrap<ServiceControllerProxy>(typeof(TService));
             if (_remoteServiceController == null)
                 throw new ApplicationException("Unable to create service proxy for " + typeof(TService).Name);
+
+            _clientSponsor.Register(_remoteServiceController);
 
             _remoteServiceController.StartAction = _delegates.StartActionObject;
             _remoteServiceController.StopAction = _delegates.StopActionObject;
@@ -72,6 +76,11 @@ namespace Topshelf.Internal
         public void Stop()
         {
             _remoteServiceController.IfNotNull(x => x.Stop());
+
+            if (_remoteServiceController != null)
+            {
+                _clientSponsor.Unregister(_remoteServiceController);
+            }
 
             AppDomain.Unload(_domain);
         }
