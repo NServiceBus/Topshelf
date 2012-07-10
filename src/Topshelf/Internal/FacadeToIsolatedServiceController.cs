@@ -31,7 +31,7 @@ namespace Topshelf.Internal
         {
             var settings = AppDomain.CurrentDomain.SetupInformation;
 
-            settings.ShadowCopyFiles = "true";
+            settings.ShadowCopyFiles = "false";
 
             if (!string.IsNullOrEmpty(PathToConfigurationFile))
             {
