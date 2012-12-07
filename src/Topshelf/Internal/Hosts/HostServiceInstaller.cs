@@ -115,6 +115,22 @@ namespace Topshelf.Internal.Hosts
             if (_log.IsInfoEnabled)
                 _log.InfoFormat("Installing Service {0}", _serviceInstaller.ServiceName);
 
+            switch (_config.WinServiceSettings.StartMode)
+            {
+                case ServiceStartMode.Manual:
+                    _serviceInstaller.StartType = ServiceStartMode.Manual;
+                    break;
+
+                case ServiceStartMode.Automatic:
+                    _serviceInstaller.StartType = ServiceStartMode.Automatic;
+
+                    break;
+                case ServiceStartMode.Disabled:
+                    _serviceInstaller.StartType = ServiceStartMode.Disabled;
+
+                    break;
+            }
+
             base.Install(stateSaver);
 
             if (_log.IsDebugEnabled) _log.Debug("Opening Registry");
