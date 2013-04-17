@@ -23,7 +23,7 @@ namespace Topshelf.Specs
         [SetUp]
         public void Establish_Context()
         {
-            _args = new[] {"/install", "/instance:bob"};
+            _args = new[] {"/Install", "/Instance:bob"};
         }
 
         [Test]

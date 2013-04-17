@@ -21,7 +21,7 @@ namespace Topshelf.Internal.ArgumentParsing
     public class ArgumentMap :
         IArgumentMap
     {
-        private readonly Dictionary<string, ArgumentTarget> _namedArgs = new Dictionary<string, ArgumentTarget>();
+        private readonly Dictionary<string, ArgumentTarget> _namedArgs = new Dictionary<string, ArgumentTarget>(StringComparer.OrdinalIgnoreCase);
         private readonly Type _type;
         private readonly List<ArgumentTarget> _unnamedArgs = new List<ArgumentTarget>();
 
