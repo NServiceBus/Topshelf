@@ -13,6 +13,7 @@
 namespace Topshelf.Configuration
 {
     using System;
+    using System.Reflection;
     using System.ServiceProcess;
     using Internal;
     using Internal.Actions;
@@ -45,11 +46,22 @@ namespace Topshelf.Configuration
             installer.ServicesDependedOn = WinServiceSettings.Dependencies.ToArray();
             installer.StartType = ServiceStartMode.Automatic;
         }
+
         public virtual void ConfigureServiceProcessInstaller(ServiceProcessInstaller installer)
         {
             installer.Username = Credentials.Username;
             installer.Password = Credentials.Password;
             installer.Account = Credentials.AccountType;
+
+            // HACK - This allows null passwords to be passed for AD Group Managed Service Accounts
+            // AD Managed Service Accounts always have a trailing dollar sign e.g. MyDomain\ServiceAccount$
+            if (installer.Username != null && installer.Username.EndsWith("$"))
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                installer.GetType()
+                    .GetField("haveLoginInfo", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(installer, true);
+            }
         }
     }
 }
